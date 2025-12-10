@@ -46,9 +46,11 @@
       text-align: center; /* Center the video */
       margin: 20px 0;
     }
-    .teaser-video { 
+    .video-iframe { 
       width: 100%; 
       max-width: 720px; /* 限制最大宽度，让视频变小 */
+      aspect-ratio: 16 / 9;
+      border: none;
       border-radius: 8px; 
       box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
       outline: none;
@@ -113,7 +115,9 @@
 
   <section id="video-section">
     <div class="video-wrapper">
-      <video class="teaser-video" src="video/12月10日.mp4" controls playsinline muted loop autoplay></video>
+      <!-- B站视频 BV 号已填入：BV1himtBEECk -->
+      <iframe class="video-iframe" src="https://player.bilibili.com/player.html?bvid=BV1himtBEECk&autoplay=0&high_quality=1&danmaku=0"
+              scrolling="no" border="0" frameborder="no" allowfullscreen="true"></iframe>
       <p class="caption">Real-time reconstruction demo running on GTX 1660.</p>
     </div>
   </section>
@@ -122,8 +126,6 @@
     <h2>Abstract</h2>
     <p>
       Robot-oriented digital twinning of parking lots faces a fundamental "trilemma" involving geometric ambiguity, environmental interference, and computational constraints: 1) The restricted, sparse forward-facing views of mobile platforms lead to geometric degeneration in traditional reconstruction due to insufficient parallax; 2) Frequent dynamic occlusions (e.g., moving vehicles) and extreme lighting variations impede consistent texture fusion; and 3) Existing neural rendering methods rely on computationally expensive offline optimization, failing to meet the real-time streaming requirements of edge-side robotics.
-    </p>
-    <p>
       To address these challenges, we propose <strong>Parking Twin</strong>, a training-free, lightweight, and streaming 3D reconstruction system. The core innovations are three-fold: 1) <strong>OSM-Prior Driven Geometric Construction:</strong> We leverage OpenStreetMap (OSM) semantic topology to directly generate metric-consistent 3D TSDFs. This transforms "blind" geometric search into a deterministic mapping. 2) <strong>Geometry-Aware Dynamic Filtering:</strong> We introduce a quad-modal geometric constraint field based on normal, height, and depth consistency to perform real-time rejection of dynamic vehicles. 3) <strong>Illumination-Robust Fusion in LAB Space:</strong> We decouple luminance and chromaticity in the perceptual space to eliminate seams caused by abrupt lighting changes.
     </p>
   </section>
@@ -264,7 +266,7 @@
             <div class="caption">(a) Depth Fusion (no prior)</div>
         </div>
         <div>
-            <img src="result/model/ParkingTwin-model/Figure/ours_birdseye.png" alt="OSM Prior" style="width:60%; max-width:480px; height:auto;">
+            <img src="assets/ours_birdseye.png" alt="OSM Prior" style="width:60%; max-width:480px; height:auto;">
             <div class="caption">(b) OSM Prior (Ours)</div>
         </div>
       </div>
@@ -305,7 +307,7 @@
           <div class="caption">(b) + Veh. Rem.</div>
         </div>
         <div>
-          <img src="result/model/ParkingTwin-model/Figure/ours_birdseye.png" alt="Full System Global" style="width:82%; max-width:320px; height:auto;">
+          <img src="assets/ours_birdseye.png" alt="Full System Global" style="width:82%; max-width:320px; height:auto;">
           <div class="caption">(c) Full System</div>
         </div>
       </div>
