@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ParkingTwin: Training-Free Streaming 3D Reconstruction for Parking-Lot Digital Twins</title>
+  <meta name="description" content="ParkingTwin: Real-time OSM-guided reconstruction and illumination-robust texturing.">
+  <style>
+    :root { 
+      --primary-color: #2c3e50;
+      --accent-color: #3498db;
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --light-gray: #f8f9fa;
+    }
+    
+    /* 添加平滑滚动效果 */
+    html { scroll-behavior: smooth; }
+
+    body { font-family: "Roboto", "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; padding: 0; line-height: 1.6; color: var(--text-color); background: var(--bg-color); }
+    
+    /* Layout */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+    section { padding: 50px 0; border-bottom: 1px solid #eee; }
+    
+    /* Typography */
+    h1 { font-size: 2.2rem; text-align: center; margin-bottom: 15px; color: var(--primary-color); }
+    h2 { font-size: 1.75rem; color: var(--primary-color); margin-top: 0; margin-bottom: 30px; text-align: center; }
+    h3 { font-size: 1.25rem; font-weight: 600; margin-top: 25px; margin-bottom: 10px; color: #444; border-left: 4px solid var(--accent-color); padding-left: 10px; }
+    p { margin-bottom: 15px; text-align: justify; }
+    
+    /* Header & Authors */
+    header { background: var(--light-gray); padding: 50px 0 30px; border-bottom: 1px solid #e1e1e1; }
+    .authors { text-align: center; font-size: 1.1rem; margin-bottom: 15px; }
+    .authors span { margin: 0 8px; color: var(--primary-color); font-weight: 500; }
+    .affiliations { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 25px; font-style: italic; line-height: 1.4; }
+    
+    /* Buttons */
+    .btn-group { text-align: center; margin-top: 20px; }
+    .btn { display: inline-block; background: #333; color: #fff; padding: 10px 20px; margin: 5px; border-radius: 25px; text-decoration: none; font-weight: 500; transition: background 0.3s; }
+    .btn:hover { background: #555; }
+    .btn-primary { background: var(--accent-color); }
+
+    /* Video Container Styling (Modified) */
+    .video-wrapper {
+      text-align: center; /* Center the video */
+      margin: 20px 0;
+    }
+    .video-iframe { 
+      width: 100%; 
+      max-width: 720px; /* 限制最大宽度，让视频变小 */
+      aspect-ratio: 16 / 9;
+      border: none;
+      border-radius: 8px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+      outline: none;
+    }
+
+    /* Images & Figures */
+    .figure-block { text-align: center; margin: 40px 0; }
+    .figure-block img { max-width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .caption { font-size: 0.9rem; color: #777; margin-top: 10px; font-style: italic; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto; }
+    
+    /* Grids */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; align-items: end; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; align-items: end; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: center; }
+    
+    /* Tables */
+    .table-wrapper { overflow-x: auto; margin: 30px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fff; }
+    th { background: #f1f3f5; font-weight: 700; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; }
+    td { padding: 12px; border-bottom: 1px solid #eee; }
+    .best { font-weight: bold; color: #d32f2f; }
+    
+    .bibtex { background: #f8f9fa; padding: 20px; border-radius: 6px; border: 1px solid #eee; overflow-x: auto; font-family: monospace; font-size: 0.85rem; }
+    
+    footer { text-align: center; padding: 40px 0; color: #888; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>ParkingTwin: Training-Free Streaming 3D Reconstruction<br>for Parking-Lot Digital Twins</h1>
+    
+    <div class="authors">
+      <span>Xinhao Liu<sup>1</sup></span>
+      <span>Yu Wang<sup>1</sup></span>
+      <span>Xiansheng Guo<sup>1*</sup></span>
+      <span>Gordon Owusu Boateng<sup>2</sup></span><br>
+      <span>Yu Cao<sup>1</sup></span>
+      <span>Haonan Si<sup>1</sup></span>
+      <span>Xingchen Guo<sup>3</sup></span>
+      <span>Nirwan Ansari<sup>4</sup></span>
+    </div>
+
+    <div class="affiliations">
+      <sup>1</sup> School of Information and Communication Engineering, University of Electronic Science and Technology of China<br>
+      <sup>2</sup> Department of Communications and Networking, Xi'an Jiaotong-Liverpool University<br>
+      <sup>3</sup> School of Electrical Engineering, Hebei University of Technology<br>
+      <sup>4</sup> Advanced Networking Lab., Department of Electrical and Computer Engineering, New Jersey Institute of Technology
+    </div>
+
+    <div class="btn-group">
+      <a href="assets/paper.pdf" class="btn btn-primary">📄 Paper</a>
+      <a href="https://github.com/mihoutao-liu/ParkingTwin" class="btn">💻 Code</a>
+      <a href="https://github.com/mihoutao-liu/ParkingTwin" class="btn">💾 Dataset</a>
+      <a href="#video-section" class="btn" style="background-color: #e74c3c;">▶️ Demo Video</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section id="video-section">
+    <div class="video-wrapper">
+      <!-- B站视频 BV 号已填入：BV1himtBEECk -->
+      <iframe class="video-iframe" src="https://player.bilibili.com/player.html?bvid=BV1himtBEECk&autoplay=0&high_quality=1&danmaku=0"
+              scrolling="no" border="0" frameborder="no" allowfullscreen="true"></iframe>
+      <p class="caption">Real-time reconstruction demo running on GTX 1660.</p>
+    </div>
+  </section>
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>
+      High-fidelity digital twins of parking lots provide essential environmental priors for the path planning, collision detection, and perception system validation of Automated Valet Parking (AVP). However, constructing such robot-oriented twins faces a fundamental "trilemma" involving geometric ambiguity, environmental interference, and computational constraints: 1) The restricted, sparse forward-facing views of mobile platforms lead to geometric degeneration in traditional reconstruction due to insufficient parallax; 2) Frequent dynamic occlusions (e.g., moving vehicles) and extreme lighting variations impede consistent texture fusion; and 3) Existing neural rendering methods rely on computationally expensive offline optimization, failing to meet the real-time streaming requirements of edge-side robotics. To address these challenges, we propose ParkingTwin, a training-free, lightweight, and streaming 3D reconstruction system. The core innovations are three-fold: 1) OSM-Prior Driven Geometric Construction: We leverage OpenStreetMap (OSM) semantic topology to directly generate metric-consistent 3D Truncated Signed Distance Field (TSDF). This transforms "blind" geometric search into a deterministic mapping, resolving the ill-posedness of sparse views while eliminating costly geometric optimization overhead. 2) Geometry-Aware Dynamic Filtering: We introduce a quad-modal geometric constraint field based on normal, height, and depth consistency to perform real-time rejection of dynamic vehicles and transient occlusions without prior training. 3) Illumination-Robust Fusion in CIE LAB Color Space: By incorporating adaptive L-channel weighting and depth gradient suppression, we decouple luminance and chromaticity in the perceptual space to eliminate seams and artifacts caused by abrupt lighting changes. Experiments demonstrate that our system achieves 30+ Frames Per Second (FPS) online streaming reconstruction on an entry-level GPU (GTX 1660). On a large-scale 68,000 m^2 real-world dataset, our method achieves an Structural Similarity Index Measure (SSIM) of 0.87 (a 16.0% improvement), accelerates end-to-end processing by approximately 15×, and reduces video memory usage by 83.3% compared with state-of-the-art 3DGS methods requiring high-end GPUs (RTX 4090D). The system outputs explicit triangular meshes directly compatible with Unity/Unreal Engine (UE) digital twin workflows, effectively serving as an automated asset generator for initializing parking lot Digital Twins.  
+    </p>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology</h2>
+    <div class="figure-block">
+      <img src="assets/system_architecture.jpg" alt="System Architecture">
+      <p class="caption">
+        <strong>Figure 1:</strong> The complete pipeline of the Parking Twin system. The system operates in three stages: (1) OSM-Prior Driven Geometric Initialization directly generates a metric-consistent TSDF mesh; (2) Geometry-Prior Based Dynamic Filtering utilizes multi-modal constraints to remove vehicles without training; (3) LAB Perceptual Fusion ensures seamless texturing under varying illumination conditions.
+      </p>
+    </div>
+  </section>
+
+  <section id="dataset">
+    <h2>Dataset & Geometric Initialization</h2>
+    <p>
+      We introduce <strong>ICPARK</strong>, a large-scale (68,000 m²) real-world dataset. The acquisition strictly adhered to constraints typical of real-world inspection: sparse forward-facing views.
+    </p>
+    
+    <div class="grid-2">
+      <div class="figure-block">
+        <img src="assets/vehicle.png" alt="Vehicle Challenges" style="width:80%; max-width:480px; height:auto;">
+        <p class="caption"><strong>Figure 2:</strong> Dynamic challenges in the ICPARK dataset. High occlusion rates and diverse vehicle appearances.</p>
+      </div>
+      <div class="figure-block">
+         <div style="display:flex; gap:10px;">
+           <img src="assets/ICPARK_OSM.png" style="width:48%" alt="OSM Map">
+           <img src="assets/ICPARK_TSDF.png" style="width:48%" alt="TSDF Mesh">
+         </div>
+         <p class="caption"><strong>Figure 6:</strong> (Left) OSM vector map. (Right) The generated 3D TSDF mesh exhibits clean topology and manifold geometry.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="qualitative">
+    <h2>Qualitative Comparison</h2>
+    
+    <div class="figure-block">
+      <div class="grid-4">
+        <div>
+          <img src="assets/trajectory.png" alt="Trajectory" style="width:100%; max-width:260px; height:auto;">
+          <div class="caption">(a) Trajectory</div>
+        </div>
+        <div>
+          <img src="assets/ours_birdseye.png" alt="Ours" style="width:89%; max-width:260px; height:auto;">
+          <div class="caption">(b) Parking Twin (Ours)</div>
+        </div>
+        <div>
+          <img src="assets/3DGS_birdseye.png" alt="3DGS" style="width:82%; max-width:260px; height:auto;">
+          <div class="caption">(c) 3DGS</div>
+        </div>
+        <div>
+          <img src="assets/ESLAM_birdseye.png" alt="ESLAM" style="width:100%; max-width:260px; height:auto;">
+          <div class="caption">(d) ESLAM</div>
+        </div>
+      </div>
+      <p class="caption">
+        <strong>Figure 3:</strong> Global reconstruction comparison. (b) Parking Twin generates a clean, vehicle-free floor plan. (c) 3DGS and (d) ESLAM exhibit ghosting artifacts and geometric noise.
+      </p>
+    </div>
+
+    <div class="figure-block">
+      <img src="assets/fig_frame_compare.jpg?v=1" alt="Frame Comparison" style="width:100%; max-width:900px; height:auto;">
+      <p class="caption">
+        <strong>Figure 4:</strong> Detailed texture quality. Row 2 (Ours) successfully removes dynamic vehicles and reconstructs clear signage. Rows 3-4 (Baselines) fail to remove vehicles and suffer from geometric holes.
+      </p>
+    </div>
+
+    <div class="figure-block">
+      <img src="assets/OpenMVS.png" alt="OpenMVS Failure" style="max-width: 60%;">
+      <p class="caption">
+        <strong>Figure 5:</strong> Failure of Traditional MVS (OpenMVS) under sparse views. Due to lack of parallax, dense matching becomes ill-posed, resulting in >60% geometric loss.
+      </p>
+    </div>
+  </section>
+
+  <section id="quantitative">
+    <h2>Quantitative Results</h2>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>PSNR ↑</th>
+            <th>SSIM ↑</th>
+            <th>LPIPS ↓</th>
+            <th>Time (min) ↓</th>
+            <th>VRAM (GB) ↓</th>
+            <th>Dyn. Removal</th>
+            <th>GPU</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>3DGS</td>
+            <td>26.5 ± 0.3</td>
+            <td>0.75 ± 0.02</td>
+            <td>0.21 ± 0.01</td>
+            <td>74 ± 5</td>
+            <td>36.0 ± 2.0</td>
+            <td>No</td>
+            <td>RTX 4090D</td>
+          </tr>
+          <tr>
+            <td>ESLAM</td>
+            <td>28.9 ± 0.4</td>
+            <td>0.82 ± 0.03</td>
+            <td>0.17 ± 0.02</td>
+            <td>243 ± 15</td>
+            <td>80.0 ± 5.0</td>
+            <td>No</td>
+            <td>RTX PRO 6000</td>
+          </tr>
+          <tr style="background:#f9f9f9;">
+            <td><strong>Parking Twin (Ours)</strong></td>
+            <td class="best">30.1 ± 0.2</td>
+            <td class="best">0.87 ± 0.01</td>
+            <td class="best">0.13 ± 0.01</td>
+            <td class="best">5 ± 0.5</td>
+            <td class="best">6.0 ± 0.5</td>
+            <td class="best">Yes</td>
+            <td>GTX 1660</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="ablation">
+    <h2>Ablation Study</h2>
+    
+    <h3>Effectiveness of OSM Prior</h3>
+    <div class="figure-block">
+      <div class="grid-2">
+        <div>
+            <img src="assets/depth_fusion_top_view.png" alt="Depth Fusion" style="width:60%; max-width:480px; height:auto;">
+            <div class="caption">(a) Depth Fusion (no prior)</div>
+        </div>
+        <div>
+            <img src="assets/ours_birdseye.png" alt="OSM Prior" style="width:60%; max-width:480px; height:auto;">
+            <div class="caption">(b) OSM Prior (Ours)</div>
+        </div>
+      </div>
+      <p class="caption">
+        <strong>Figure 7:</strong> Depth Fusion suffers from noise and jagged boundaries, while OSM Prior ensures clean topology.
+      </p>
+    </div>
+
+    <h3>Cumulative Module Contributions</h3>
+    <div class="figure-block">
+      <div class="grid-3">
+        <div>
+          <img src="assets/A_baseline.png" alt="Baseline Local" style="width:100%; max-width:320px; height:auto;">
+          <div class="caption">(a) Baseline (RGB)</div>
+        </div>
+        <div>
+          <img src="assets/no_lab_0000.png" alt="Veh Removal Local" style="width:85%; max-width:320px; height:auto;">
+          <div class="caption">(b) + Veh. Rem.</div>
+        </div>
+        <div>
+          <img src="assets/ours0000.png" alt="Full System Local" style="width:100%; max-width:320px; height:auto;">
+          <div class="caption">(c) Full System (LAB)</div>
+        </div>
+      </div>
+      <p class="caption">
+        <strong>Figure 9 (Local View):</strong> Progressive ablation. Baseline shows ghosting; Vehicle Removal fixes geometry but leaves lighting seams; LAB Fusion eliminates seams.
+      </p>
+    </div>
+
+    <div class="figure-block">
+      <div class="grid-3">
+        <div>
+          <img src="assets/A_baseline_global.png" alt="Baseline Global" style="width:80%; max-width:320px; height:auto;">
+          <div class="caption">(a) Baseline</div>
+        </div>
+        <div>
+          <img src="assets/no_lab_birdseye.png" alt="Veh Removal Global" style="width:82.5%; max-width:320px; height:auto;">
+          <div class="caption">(b) + Veh. Rem.</div>
+        </div>
+        <div>
+          <img src="assets/ours_birdseye.png" alt="Full System Global" style="width:82%; max-width:320px; height:auto;">
+          <div class="caption">(c) Full System</div>
+        </div>
+      </div>
+      <p class="caption">
+        <strong>Figure 10 (Global View):</strong> The LAB fusion strategy successfully achieves global color balance compared to RGB fusion.
+      </p>
+    </div>
+  </section>
+
+  <section id="citation">
+    <h2>Citation</h2>
+    <div class="bibtex">
+@article{ParkingTwin2025,
+  title   = {ParkingTwin: Training-Free Streaming 3D Reconstruction for Parking-Lot Digital Twins},
+  author  = {Xinhao Liu and Yu Wang and Xiansheng Guo and Gordon Owusu Boateng and Yu Cao and Haonan Si and Xingchen Guo and Nirwan Ansari},
+  journal = {Preprint},
+  year    = {2025}
+}
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>Copyright © 2025 ParkingTwin Project.</p>
+  </div>
+</footer>
+
+</body>
+</html>
