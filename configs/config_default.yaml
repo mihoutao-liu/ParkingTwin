@@ -1,0 +1,214 @@
+# ============================================================================
+# Default Texturing Configuration
+# ============================================================================
+# Usage: python texture_realtime.py --config config_default.yaml
+
+# ---------- Data Paths ----------
+paths:
+  mesh_path: "Datasets/your_dataset/merged_mesh.ply"
+  pose_dir: "Datasets/your_dataset/pose"
+  first_pose_txt: "Datasets/your_dataset/first_pose_osm.txt"
+  K_npz: "Datasets/your_dataset/K_rectified.npz"
+  rgb_dir: "Datasets/your_dataset/color"
+  depth_dir: "Datasets/your_dataset/depth"
+
+# ---------- Visualization Parameters ----------
+visualization:
+  sample_rate: 20                     # Trajectory display sampling rate
+  arrow_scale: 1.0                    # Arrow scale
+  arrow_length: 2.0                   # Arrow length
+  show_camera_frustum: true           # Whether to show camera frustum
+  update_rate: 10                     # Update visualization every N frames
+  show_cameras: true                  # Whether to show cameras
+  show_mesh: true                     # Whether to show mesh
+
+# ---------- Texturing Parameters ----------
+texturing:
+  frame_sample_rate: 1                # Frame sampling rate
+  max_images: 10000                   # Maximum number of images
+  update_interval: 0.01               # Update interval (seconds)
+
+# ---------- OpenMVS Enhancement Parameters ----------
+openmvs:
+  depth_threshold: 1.5                # Depth consistency threshold (meters)
+  depth_scale: 1000.0                 # Depth scale factor
+  min_depth: 0.1                      # Minimum valid depth (meters)
+  max_depth: 20.0                     # Maximum valid depth (meters)
+  angle_threshold_deg: 360            # Maximum viewing angle (degrees)
+  use_depth_consistency: true         # Whether to use depth consistency check
+  use_angle_weighting: true           # Whether to use angle weighting
+  use_exposure_comp: true             # Whether to perform exposure compensation
+  debug_mode: true                    # Whether to show debug information
+  
+  # Adaptive Depth Detection Parameters
+  use_adaptive_depth: true            # Whether to enable adaptive depth detection
+  floor_normal_threshold: 0.7         # Floor identification threshold (cosine value)
+  floor_depth_front: 0.2              # Tolerance when floor is in front
+  floor_depth_back: 0.05              # Tolerance when floor is in back
+  wall_depth_front: 1.8               # Tolerance when wall is in front
+  wall_depth_back: 1                  # Tolerance when wall is in back
+  
+  # Vehicle Removal Parameters (Legacy, replaced by vehicle_detection)
+  enable_vehicle_removal: false       # Whether to enable vehicle removal
+  vehicle_height_threshold: 0.5       # Vehicle height threshold (meters)
+  vehicle_mask_dilation: 5            # Mask dilation radius (pixels)
+  save_vehicle_masks: false           # Whether to save masks for debugging
+
+# ---------- Fixed Height Parameters ----------
+camera:
+  fix_camera_height: true             # Whether to fix camera height
+  fixed_height: null                  # null=use first frame height, or set specific value e.g., 1.5
+  force_camera_horizontal: true       # Whether to force camera horizontal (eliminate roll/pitch jitter)
+
+# ---------- Vehicle Detection Parameters (4-Modal Geometric Detection) ----------
+vehicle_detection:
+  enable: true                        # Whether to enable vehicle detection (default off)
+  # 1. Normal Detection
+  use_ground_normal: true             # Detect ground normal (n·[0,0,1] > threshold)
+  ground_normal_threshold: 0.94       # Normal threshold (cos(20°) ≈ 0.94)
+  # 2. Height Filter
+  use_height_filter: true             # Detect vehicle height range
+  vehicle_height_min: 0.5             # Minimum vehicle height (meters)
+  vehicle_height_max: 2.5             # Maximum vehicle height (meters)
+  # 3. Depth Discontinuity
+  use_depth_discontinuity: true       # Detect depth gradients
+  depth_gradient_threshold: 1.0       # Depth gradient threshold (m/pixel)
+  # 4. TSDF Depth Consistency (New! Using OSM priors)
+  use_depth_consistency: false        # Whether to use TSDF depth consistency (default off)
+  depth_diff_threshold: 0.3           # Depth difference threshold (meters) D_TSDF - D_obs > threshold
+  depth_noise_tolerance: 0.05         # Sensor noise tolerance (meters)
+  # General Settings
+  require_all_cues: true              # true=all cues AND, false=any cue OR
+  mask_dilation: 5                    # Mask dilation (pixels, ensures complete coverage)
+  save_masks: false                   # Whether to save vehicle mask images (for debugging)
+
+# ---------- GPU Acceleration Parameters ----------
+gpu:
+  use_gpu: true                       # Whether to use GPU acceleration (if available)
+  device_id: 0                        # GPU Device ID
+
+# ---------- Rotation Configuration ----------
+rotation:
+  config_file: "Datasets/your_dataset/rotation_config.json"
+  auto_load: true                     # Whether to auto-load saved rotation config
+  default_rotation: [180, 0, 0]       # Default rotation (X, Y, Z degrees)
+
+# ============================================================================
+# Step 1: Image Quality Assessment and Filtering
+# ============================================================================
+step1_quality_filter:
+  enable: true                        # Whether to enable image quality filtering
+  quality_threshold: 30.0             # Quality threshold (higher is stricter, suggested 30-100)
+  sharpness_threshold: 30.0           # Sharpness threshold (Laplacian variance, suggested 50-200)
+  max_overexposure: 0.15              # Max overexposure ratio (0-1, suggested 0.1-0.2)
+  max_underexposure: 0.15             # Max underexposure ratio (0-1, suggested 0.1-0.2)
+  show_quality_stats: true            # Whether to show quality statistics
+
+# ============================================================================
+# Step 2: Image Preprocessing Enhancement
+# ============================================================================
+step2_image_enhancement:
+  enable: true                        # Whether to enable image enhancement preprocessing
+  # Unsharp Masking
+  use_unsharp_mask: true              # Whether to use unsharp masking (enhance details)
+  unsharp_radius: 2.0                 # Unsharp radius (1.0-3.0, larger means stronger enhancement)
+  unsharp_amount: 1.5                 # Unsharp strength (1.0-2.0, larger means sharper)
+  # Bilateral Filtering
+  use_bilateral_filter: true          # Whether to use bilateral filtering (denoise while preserving edges)
+  bilateral_d: 5                      # Bilateral filter diameter (5-9, larger means smoother)
+  bilateral_sigma_color: 75           # Color space sigma (50-100)
+  bilateral_sigma_space: 75           # Coordinate space sigma (50-100)
+  # CLAHE Contrast Enhancement
+  use_clahe: true                     # Whether to use CLAHE contrast enhancement
+  clahe_clip_limit: 2.0               # CLAHE contrast limit (1.0-4.0)
+  clahe_tile_size: 8                  # CLAHE grid size (8-16)
+
+# ============================================================================
+# Step 3: Bicubic Interpolation
+# ============================================================================
+step3_bicubic:
+  enable: true                        # Whether to use bicubic interpolation (higher quality sampling)
+  bicubic_a: -0.5                     # Bicubic parameter (-0.75 to -0.5, -0.5 is sharper)
+
+# ============================================================================
+# Step 4: Intelligent View Selection and Weighting
+# ============================================================================
+step4_view_weighting:
+  enable: true                        # Whether to use intelligent view weighting (View + Distance + Quality)
+  view_angle_weight: 0.4              # View angle weight (0-1)
+  distance_weight: 0.3                # Distance weight (0-1)
+  image_quality_weight: 0.3           # Image quality weight (0-1) (Sum should be 1)
+  max_view_angle_deg: 75.0            # Maximum effective view angle (degrees, weight decays fast beyond this)
+  distance_falloff: 2.0               # Distance falloff exponent (larger means faster decay)
+  min_effective_weight: 0.1           # Minimum effective weight threshold (samples below this are ignored)
+
+# ============================================================================
+# Step 5: Seam Smoothing
+# ============================================================================
+step5_seam_smoothing:
+  enable: true                        # Whether to enable seam smoothing
+  variance_threshold: 0.01            # Variance threshold (values above considered seams, 0.005-0.02 reasonable)
+  smoothing_strength: 0.5             # Smoothing strength (0-1, 0=none, 1=fully smooth)
+  k_neighbors: 15                     # Seam detection neighborhood size (number of vertices)
+
+# ============================================================================
+# Step 6: LAB Color Space
+# ============================================================================
+step6_lab_color:
+  enable: true                        # Whether to blend colors in LAB color space
+  l_weight: 0.5                       # Luminance channel weight (0-1, higher preserves brightness details)
+  normalize_l: true                   # Whether to normalize L channel (reduce lighting effects)
+  l_clip_percentile: 2.0              # L channel clipping percentile (avoid extremes, 0-5)
+
+# ============================================================================
+# Step 7: Sub-pixel Precision Projection
+# ============================================================================
+step7_subpixel:
+  enable: true                        # Whether to use sub-pixel precision projection
+  use_float64: true                   # Use float64 for projection calculations (improves precision)
+  weight_mode: "bilinear"             # Sub-pixel weight mode: "bilinear"/"bicubic"
+  preserve_weight: true               # Preserve sub-pixel info during fusion (no rounding)
+  projection_epsilon: 1.0e-10         # Numerical stability threshold for projection
+
+# ============================================================================
+# Step 8: Texture Post-Processing
+# ============================================================================
+step8_post_processing:
+  enable: true                        # Whether to enable texture post-processing
+  
+  # Outlier Detection
+  outlier_detection:
+    enable: true                      # Whether to perform outlier detection and removal
+    method: "both"                    # Detection method: "statistical"/"local"/"both"
+    zscore_threshold: 3.0             # Z-score threshold (std dev multiplier, 2-4)
+    local_window: 5                   # Local neighborhood window size (odd number, 3-9)
+    local_threshold: 2.5              # Local outlier threshold (std dev multiplier)
+  
+  # Edge-Preserving Smoothing
+  edge_preserving:
+    enable: true                      # Whether to perform edge-preserving smoothing
+    method: "bilateral"               # Smoothing method: "bilateral"/"anisotropic"
+    bilateral_sigma_spatial: 5.0      # Bilateral spatial sigma (1-10)
+    bilateral_sigma_color: 25.0       # Bilateral color sigma (10-50)
+    anisotropic_iterations: 10        # Anisotropic diffusion iterations (5-20)
+    anisotropic_kappa: 50.0           # Anisotropic diffusion edge sensitivity (20-100)
+  
+  # Color Consistency Correction
+  color_correction:
+    enable: true                      # Whether to perform color consistency correction
+    method: "histogram"               # Correction method: "histogram"/"transfer"
+    histogram_match_percentile: 5.0   # Histogram matching clip percentile (1-10)
+    transfer_preserve_luminance: true # Preserve luminance during color transfer
+
+# ---------- Post-processing: Empty Area Filling ----------
+post_processing:
+  fill_empty_vertices: true           # Whether to fill empty areas occluded by vehicles
+  fill_method: "knn"                  # Filling method: knn (K-Nearest Neighbors interpolation)
+  knn_neighbors: 8                    # Number of K-Nearest Neighbors
+
+# ---------- Model Saving ----------
+output:
+  save_textured_mesh: true            # Whether to save the textured mesh
+  output_dir: "output/textured_meshes" # Output directory
+  output_filename: "textured_mesh.ply" # Output filename (supports .ply/.obj)
+  auto_timestamp: true                # Whether to add timestamp to filename

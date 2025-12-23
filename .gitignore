@@ -1,0 +1,88 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Output directories
+output/
+*.ply
+*.obj
+*.npz
+*.npy
+
+# Logs
+*.log
+*.out
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Data (keep structure but ignore large files)
+Datasets/**/*.ply
+Datasets/**/*.obj
+Datasets/**/*.npz
+Datasets/**/*.npy
+Datasets/**/*.png
+Datasets/**/*.jpg
+Datasets/**/*.txt
+Datasets/**/*.json
+!Datasets/README.md
+!Datasets/ICPARKOSM/ICPARK.osm
+# Keep dataset folder structure but ignore user data
+Datasets/your_dataset/
+!Datasets/your_dataset/.gitkeep
+
+# Config files with sensitive paths (keep templates)
+configs/*.yaml
+!configs/config_default.yaml
+!configs/config_template.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
+
+# GPU/CUDA
+*.cubin
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+

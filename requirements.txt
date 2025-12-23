@@ -1,0 +1,29 @@
+# Core dependencies
+numpy>=1.19.0
+opencv-python>=4.5.0
+open3d>=0.13.0
+pyyaml>=5.4.0
+scipy>=1.5.0
+
+# OSM processing
+shapely>=1.8.0
+
+# Image processing and visualization
+scikit-image>=0.18.0
+matplotlib>=3.3.0
+
+# Progress bars
+tqdm>=4.60.0
+
+# GPU acceleration (optional)
+# Uncomment and install based on your CUDA version:
+# cupy-cuda11x>=10.0.0  # For CUDA 11.x
+# cupy-cuda12x>=10.0.0  # For CUDA 12.x
+
+# For evaluation (optional, if using scikit-image for SSIM)
+# scikit-image already included above
+
+# Note: Some packages may have system-specific requirements
+# - Open3D requires appropriate graphics drivers
+# - CuPy requires CUDA toolkit matching your GPU driver version
+
