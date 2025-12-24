@@ -176,15 +176,6 @@
 
   <section id="model-viewer-section">
     <h2>Interactive 3D Model</h2>
-    <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 20px; text-align: center;">
-      <p style="margin: 0; color: #856404; font-weight: 500;">
-        ⚠️ <strong>Note:</strong> The interactive 3D viewer works best when running locally. 
-        On GitHub Pages (HTTPS), the model cannot be loaded due to browser security restrictions.
-      </p>
-      <p style="margin: 10px 0 0 0; color: #856404; font-size: 0.9rem;">
-        💡 Download the project and open index.html locally to view the full interactive 3D model.
-      </p>
-    </div>
     <p style="text-align: center; color: #666; margin-bottom: 20px;">
       Explore the reconstructed parking lot in 3D. Use your mouse to rotate, zoom, and pan.
     </p>
@@ -199,10 +190,10 @@
         Interactive 3D reconstruction result of the parking lot. The model shows the complete geometric structure and texture details.
       </p>
       <p class="caption" style="margin-top: 15px; color: #e67e22; font-weight: 500;">
-        📦 The complete model (449MB) can be downloaded at: <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db; text-decoration: underline;">Quark Cloud Storage</a>
+        ⚠️ Note: Due to page loading file size limitations, the interactive map displayed is a cropped 1/4 version. The complete model (449MB) can be downloaded at <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db; text-decoration: underline;">https://pan.quark.cn/s/d180e32624df</a>
       </p>
       <p class="caption" style="margin-top: 10px; color: #7f8c8d; font-size: 0.85rem;">
-        💡 <strong>For local viewing:</strong> Download the project, place mesh.ply in the assets/ folder, and open index.html in your browser.
+        💡 Tip: For the best viewing experience, download the HTML file and open it locally with the mesh.ply file in the assets folder.
       </p>
     </div>
   </section>
@@ -445,38 +436,11 @@
     scene.add(directionalLight4);
     
     // 加载 PLY 模型
-    // 检测是否在 HTTPS 环境（GitHub Pages）
-    const isHTTPS = window.location.protocol === 'https:';
+    // 从云存储服务器加载完整模型
+    const modelURL = 'http://118.24.188.137:9000/lxh/mesh.ply';
     
-    // 如果是 HTTPS 环境，由于混合内容限制，显示提示而不加载模型
-    // 如果是本地 HTTP 环境，可以正常加载
-    let modelURL;
-    
-    if (isHTTPS) {
-      // HTTPS 环境：无法加载 HTTP 资源
-      if (loadingIndicator) {
-        loadingIndicator.innerHTML = 
-          '⚠️ Due to browser security restrictions, the 3D model cannot be loaded on GitHub Pages.<br><br>' +
-          '<span style="font-size: 0.95rem; display: block; margin-top: 15px;">📥 <strong>To view the interactive 3D model:</strong></span>' +
-          '<span style="font-size: 0.85rem; display: block; margin-top: 10px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">' +
-          '1. <strong>Download</strong> the complete project from GitHub<br>' +
-          '2. <strong>Place</strong> the mesh.ply file in the assets/ folder<br>' +
-          '3. <strong>Open</strong> index.html locally in your browser<br><br>' +
-          'Or download the full model from: <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db;">Quark Cloud</a>' +
-          '</span>';
-        loadingIndicator.style.color = '#e67e22';
-        loadingIndicator.style.fontSize = '1rem';
-        loadingIndicator.style.lineHeight = '1.8';
-        loadingIndicator.style.padding = '30px';
-      }
-      // 不尝试加载模型
-      return;
-    } else {
-      // HTTP 环境（本地）：可以正常加载
-      modelURL = 'http://118.24.188.137:9000/lxh/mesh.ply';
-      // 或者使用本地文件
-      // modelURL = 'assets/mesh.ply';
-    }
+    // 💻 本地开发测试（备用）
+    // const modelURL = 'assets/mesh.ply';
     
     const loader = new PLYLoader();
     loader.load(
@@ -532,10 +496,32 @@
       function (error) {
         console.error('Error loading model:', error);
         if (loadingIndicator) {
-          loadingIndicator.innerHTML = '❌ Unable to load 3D model online due to CORS restrictions.<br>' +
-            '<span style="font-size: 0.9rem; margin-top: 10px; display: block;">💡 To view the 3D model:</span>' +
-            '<span style="font-size: 0.85rem; margin-top: 5px; display: block;">1. Download the complete project and open index.html locally, or</span>' +
-            '<span style="font-size: 0.85rem; display: block;">2. Download the full model from the <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db;">Quark link above</a></span>';
+          // 判断是否为 CORS 错误
+          const isCORSError = error.message && (
+            error.message.includes('CORS') || 
+            error.message.includes('Failed to fetch') ||
+            error.message.includes('NetworkError')
+          );
+          
+          if (isCORSError) {
+            loadingIndicator.innerHTML = 
+              '❌ <strong>CORS Error: Unable to load 3D model</strong><br>' +
+              '<div style="text-align: left; max-width: 600px; margin: 15px auto; font-size: 0.9rem; line-height: 1.8;">' +
+              '🔧 <strong>Server Configuration Required:</strong><br>' +
+              '<span style="margin-left: 20px;">The server needs to enable CORS (Cross-Origin Resource Sharing).</span><br><br>' +
+              '📋 <strong>For Server Administrator:</strong><br>' +
+              '<span style="margin-left: 20px;">1. Add CORS headers to allow cross-origin requests</span><br>' +
+              '<span style="margin-left: 20px;">2. See <a href="https://github.com/mihoutao-liu/ParkingTwin/blob/main/SERVER_CORS_CONFIG.md" target="_blank" style="color: #3498db;">SERVER_CORS_CONFIG.md</a> for detailed setup</span><br><br>' +
+              '💡 <strong>Alternative Options:</strong><br>' +
+              '<span style="margin-left: 20px;">• Download <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db;">full model</a> and view locally</span><br>' +
+              '<span style="margin-left: 20px;">• Clone the repository and open index.html locally</span>' +
+              '</div>';
+          } else {
+            loadingIndicator.innerHTML = 
+              '❌ <strong>Error Loading Model</strong><br>' +
+              '<span style="font-size: 0.9rem; margin-top: 10px; display: block;">' + error.message + '</span>';
+          }
+          
           loadingIndicator.style.color = '#ff6b6b';
           loadingIndicator.style.fontSize = '1rem';
           loadingIndicator.style.lineHeight = '1.6';
