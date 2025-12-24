@@ -436,21 +436,11 @@
     scene.add(directionalLight4);
     
     // 加载 PLY 模型
-    // ⚠️ 请在云存储配置完成后，将下面的 URL 替换为您的文件地址
-    // 详细配置步骤请查看项目根目录的 CLOUD_STORAGE_GUIDE.md
-    
-    // 🌐 Cloudflare R2（推荐 - 国际访问，免费）
-    // 格式：https://pub-[YOUR-ID].r2.dev/mesh.ply
+    // 从云存储服务器加载完整模型
     const modelURL = 'http://118.24.188.137:9000/lxh/mesh.ply';
     
-    // 🇨🇳 阿里云 OSS（推荐 - 国内访问快）
-    // const modelURL = 'https://[bucket-name].oss-cn-hangzhou.aliyuncs.com/mesh.ply';
-    
-    // 💻 本地开发测试
+    // 💻 本地开发测试（备用）
     // const modelURL = 'assets/mesh.ply';
-    
-    // ⚠️ 临时方案（不稳定，仅用于测试）
-    // const modelURL = 'https://cors-anywhere.herokuapp.com/https://github.com/mihoutao-liu/ParkingTwin/releases/download/V.0.0/mesh.ply';
     
     const loader = new PLYLoader();
     loader.load(
