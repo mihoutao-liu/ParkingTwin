@@ -139,7 +139,7 @@
   <section id="abstract">
     <h2>Abstract</h2>
     <p>
-      High-fidelity digital twins of parking lots provide essential environmental priors for the path planning, collision detection, and perception system validation of Automated Valet Parking (AVP). However, constructing such robot-oriented twins faces a fundamental "trilemma" involving geometric ambiguity, environmental interference, and computational constraints: 1) The restricted, sparse forward-facing views of mobile platforms lead to geometric degeneration in traditional reconstruction due to insufficient parallax; 2) Frequent dynamic occlusions (e.g., moving vehicles) and extreme lighting variations impede consistent texture fusion; and 3) Existing neural rendering methods rely on computationally expensive offline optimization, failing to meet the real-time streaming requirements of edge-side robotics. To address these challenges, we propose ParkingTwin, a training-free, lightweight, and streaming 3D reconstruction system. The core innovations are three-fold: 1) OSM-Prior Driven Geometric Construction: We leverage OpenStreetMap (OSM) semantic topology to directly generate metric-consistent 3D Truncated Signed Distance Field (TSDF). This transforms "blind" geometric search into a deterministic mapping, resolving the ill-posedness of sparse views while eliminating costly geometric optimization overhead. 2) Geometry-Aware Dynamic Filtering: We introduce a quad-modal geometric constraint field based on normal, height, and depth consistency to perform real-time rejection of dynamic vehicles and transient occlusions without prior training. 3) Illumination-Robust Fusion in CIE LAB Color Space: By incorporating adaptive L-channel weighting and depth gradient suppression, we decouple luminance and chromaticity in the perceptual space to eliminate seams and artifacts caused by abrupt lighting changes. Experiments demonstrate that our system achieves 30+ Frames Per Second (FPS) online streaming reconstruction on an entry-level GPU (GTX 1660). On a large-scale 68,000 m^2 real-world dataset, our method achieves an Structural Similarity Index Measure (SSIM) of 0.87 (a 16.0% improvement), accelerates end-to-end processing by approximately 15×, and reduces video memory usage by 83.3% compared with state-of-the-art 3DGS methods requiring high-end GPUs (RTX 4090D). The system outputs explicit triangular meshes directly compatible with Unity/Unreal Engine (UE) digital twin workflows, effectively serving as an automated asset generator for initializing parking lot Digital Twins.  
+      High-fidelity digital twins of parking lots provide essential environmental priors for path planning, collision detection, and perception system validation of Automated Valet Parking (AVP). However, constructing such robotoriented twins faces a fundamental "trilemma" involving geometric ambiguity, environmental interference, and computational constraints: 1) The restricted and sparse forward-facing views of mobile platforms lead to geometric degeneration in traditional methods due to insufficient parallax; 2)Frequent dynamic occlusions (e.g., moving vehicles) and extreme lightingvariations impede consistent texture fusion; and 3) Existing neural rendering methods rely on computationally expensive offline optimization, failing to meet the real-time streaming requirements of edge-side robotics. To address these challenges, we propose ParkingTwin, a training-free, lightweight, and streaming 3D reconstruction system. The core innovations are three-fold: 1) OSM-Prior Driven Geometric Construction: We leverage OpenStreetMap (OSM) semantic topology to directly generate metric-consistent 3D Truncated Signed Distance Field (TSDF). This approache transforms "blind" geometric search into deterministic mapping, resolving the ill-posedness caused by sparse views while eliminating costly geometric optimization overhead. 2)  Geometry-Aware Dynamic Filtering: We introduce a quad-modal geometric constraint field based on normal, height, and depth consistency to perform real-time rejection of dynamic vehicles and transient occlusions without prior training. 3) Illumination-Robust Fusion in the CIELAB Color Space: By incorporating adaptive L-channel weighting and depth gradient suppression, we decouple luminance and chromaticity in the perceptual space to eliminate seams and artifacts caused by abrupt lighting changes. Experiments demonstrate that our system achieves 30+ Frames Per Second (FPS) online streaming reconstruction on an entry-level GPU (GTX 1660). On a large-scale 68,000 m2 real-world dataset, our method achieves an Structural Similarity Index Measure (SSIM) of 0.87 (a 16.0% improvement), accelerates end-to-end processing by approximately 15×, and reduces video memory usage by 83.3% compared with state-of-the-art 3D Gaussian Splatting (3DGS) methods that require high-end GPUs (RTX 4090D). The system outputs explicit triangular meshes directly compatible with Unity/Unreal Engine (UE) digital twin workflows, effectively serving as an automated asset generator for initializing parking lot Digital Twins. 
     </p>
   </section>
 
@@ -436,20 +436,21 @@
     scene.add(directionalLight4);
     
     // 加载 PLY 模型
-    // 配置模型 URL：选择一个支持 CORS 的链接
+    // ⚠️ 请在云存储配置完成后，将下面的 URL 替换为您的文件地址
+    // 详细配置步骤请查看项目根目录的 CLOUD_STORAGE_GUIDE.md
     
-    // 方案 1: 使用 CORS 代理访问 GitHub Releases（临时方案，可能不稳定）
-    const modelURL = 'https://cors-anywhere.herokuapp.com/https://github.com/mihoutao-liu/ParkingTwin/releases/download/V.0.0/mesh.ply';
+    // 🌐 Cloudflare R2（推荐 - 国际访问，免费）
+    // 格式：https://pub-[YOUR-ID].r2.dev/mesh.ply
+    const modelURL = 'YOUR_CLOUDFLARE_R2_URL_HERE';
     
-    // 方案 2: 本地开发时使用
+    // 🇨🇳 阿里云 OSS（推荐 - 国内访问快）
+    // const modelURL = 'https://[bucket-name].oss-cn-hangzhou.aliyuncs.com/mesh.ply';
+    
+    // 💻 本地开发测试
     // const modelURL = 'assets/mesh.ply';
     
-    // 方案 3: 使用支持 CORS 的 CDN（推荐长期方案）
-    // 可以使用 Cloudflare R2, Backblaze B2, 或其他 CDN 服务
-    // const modelURL = 'YOUR_CLOUDFLARE_R2_URL_HERE';
-    
-    // 方案 4: 夸克网盘直链（如果支持 CORS）
-    // const modelURL = 'YOUR_QUARK_DIRECT_LINK_HERE';
+    // ⚠️ 临时方案（不稳定，仅用于测试）
+    // const modelURL = 'https://cors-anywhere.herokuapp.com/https://github.com/mihoutao-liu/ParkingTwin/releases/download/V.0.0/mesh.ply';
     
     const loader = new PLYLoader();
     loader.load(
