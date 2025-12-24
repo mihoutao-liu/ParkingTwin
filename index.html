@@ -76,7 +76,21 @@
     .bibtex { background: #f8f9fa; padding: 20px; border-radius: 6px; border: 1px solid #eee; overflow-x: auto; font-family: monospace; font-size: 0.85rem; }
     
     footer { text-align: center; padding: 40px 0; color: #888; font-size: 0.9rem; }
+    
+    /* 3D Model Viewer Styles */
+    #model-viewer { width: 100%; height: 600px; background: #1a1a1a; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; }
+    .viewer-controls { text-align: center; margin-top: 15px; color: #666; font-size: 0.85rem; }
+    .loading-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 1.2rem; z-index: 10; }
   </style>
+  <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
 
@@ -105,7 +119,7 @@
     <div class="btn-group">
       <a href="assets/paper.pdf" class="btn btn-primary">📄 Paper</a>
       <a href="https://github.com/mihoutao-liu/ParkingTwin" class="btn">💻 Code</a>
-      <a href="https://github.com/mihoutao-liu/ParkingTwin" class="btn">💾 Dataset</a>
+      <a href="https://github.com/mihoutao-liu/ParkingTwin/tree/main/Datasets" class="btn">💾 Dataset</a>
       <a href="#video-section" class="btn" style="background-color: #e74c3c;">▶️ Demo Video</a>
     </div>
   </div>
@@ -157,6 +171,27 @@
          </div>
          <p class="caption"><strong>Figure 6:</strong> (Left) OSM vector map. (Right) The generated 3D TSDF mesh exhibits clean topology and manifold geometry.</p>
       </div>
+    </div>
+  </section>
+
+  <section id="model-viewer-section">
+    <h2>Interactive 3D Model</h2>
+    <p style="text-align: center; color: #666; margin-bottom: 20px;">
+      Explore the reconstructed parking lot in 3D. Use your mouse to rotate, zoom, and pan.
+    </p>
+    <div class="figure-block">
+      <div id="model-viewer">
+        <div class="loading-text" id="loading-indicator">Loading 3D Model...</div>
+      </div>
+      <div class="viewer-controls">
+        🖱️ Left Click + Drag: Rotate | Mouse Wheel: Zoom | Right Click + Drag: Pan
+      </div>
+      <p class="caption">
+        Interactive 3D reconstruction result of the parking lot. The model shows the complete geometric structure and texture details.
+      </p>
+      <p class="caption" style="margin-top: 15px; color: #e67e22; font-weight: 500;">
+        ⚠️ Note: Due to page loading file size limitations, the interactive map displayed is a cropped 1/4 version. The complete model can be downloaded at <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db; text-decoration: underline;">https://pan.quark.cn/s/d180e32624df</a>
+      </p>
     </div>
   </section>
 
@@ -335,6 +370,152 @@
     <p>Copyright © 2025 ParkingTwin Project.</p>
   </div>
 </footer>
+
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
+
+  // 检查是否存在 model-viewer 容器
+  const container = document.getElementById('model-viewer');
+  if (!container) {
+    console.error('Model viewer container not found');
+  } else {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    
+    // 创建场景
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2a2a2a);
+    
+    // 创建相机
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      10000
+    );
+    camera.position.set(100, 100, 100);
+    
+    // 创建渲染器
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+    
+    // 添加轨道控制器
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.minDistance = 10;
+    controls.maxDistance = 500;
+    
+    // 添加光源 - 大幅增强亮度
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    scene.add(ambientLight);
+    
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight1.position.set(100, 100, 50);
+    scene.add(directionalLight1);
+    
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1.0);
+    directionalLight2.position.set(-100, -100, -50);
+    scene.add(directionalLight2);
+    
+    const directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight3.position.set(0, 50, 100);
+    scene.add(directionalLight3);
+    
+    const directionalLight4 = new THREE.DirectionalLight(0xffffff, 0.6);
+    directionalLight4.position.set(0, -50, -100);
+    scene.add(directionalLight4);
+    
+    // 加载 PLY 模型
+    // 配置模型 URL：可以是本地路径或外部链接
+    const modelURL = 'assets/mesh.ply'; // 本地加载
+    // const modelURL = 'https://github.com/mihoutao-liu/ParkingTwin/releases/download/v1.0/mesh.ply'; // GitHub Releases
+    // const modelURL = 'YOUR_QUARK_DIRECT_LINK_HERE'; // 夸克网盘直链
+    
+    const loader = new PLYLoader();
+    loader.load(
+      modelURL,
+      function (geometry) {
+        // 计算几何体的边界盒以居中显示
+        geometry.computeBoundingBox();
+        const center = new THREE.Vector3();
+        geometry.boundingBox.getCenter(center);
+        geometry.translate(-center.x, -center.y, -center.z);
+        
+        // 创建材质和网格 - 增强亮度
+        const material = new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          side: THREE.DoubleSide,
+          flatShading: false,
+          roughness: 0.7,
+          metalness: 0.1,
+          emissive: new THREE.Color(0x111111),
+          emissiveIntensity: 0.3
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        
+        // 调整相机位置以适应模型 - 俯视角度
+        const bbox = geometry.boundingBox;
+        const size = bbox.max.clone().sub(bbox.min);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+        cameraZ *= 1.5; // 添加一些边距
+        
+        // 俯视角度：相机在正上方，地图居中
+        camera.position.set(0, 0, cameraZ * 0.7);
+        camera.lookAt(0, 0, 0);
+        controls.update();
+        
+        // 隐藏加载指示器
+        if (loadingIndicator) {
+          loadingIndicator.style.display = 'none';
+        }
+        
+        console.log('Model loaded successfully');
+      },
+      function (xhr) {
+        const percentComplete = (xhr.loaded / xhr.total) * 100;
+        if (loadingIndicator) {
+          loadingIndicator.textContent = `Loading 3D Model... ${Math.round(percentComplete)}%`;
+        }
+        console.log('Loading: ' + Math.round(percentComplete) + '%');
+      },
+      function (error) {
+        console.error('Error loading model:', error);
+        if (loadingIndicator) {
+          loadingIndicator.textContent = 'Error loading model. Please check the file path.';
+          loadingIndicator.style.color = '#ff6b6b';
+        }
+      }
+    );
+    
+    // 动画循环
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+    
+    // 响应窗口大小变化
+    window.addEventListener('resize', function() {
+      if (container) {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }
+    });
+  }
+</script>
 
 </body>
 </html>
