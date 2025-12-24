@@ -437,7 +437,7 @@
     
     // 加载 PLY 模型
     // 从云存储服务器加载完整模型
-    const modelURL = 'http://118.24.188.137:9000/lxh/mesh.ply';
+    const modelURL = 'https://file.daodajiao.com/lxh/mesh.ply';
     
     // 💻 本地开发测试（备用）
     // const modelURL = 'assets/mesh.ply';
@@ -496,32 +496,10 @@
       function (error) {
         console.error('Error loading model:', error);
         if (loadingIndicator) {
-          // 判断是否为 CORS 错误
-          const isCORSError = error.message && (
-            error.message.includes('CORS') || 
-            error.message.includes('Failed to fetch') ||
-            error.message.includes('NetworkError')
-          );
-          
-          if (isCORSError) {
-            loadingIndicator.innerHTML = 
-              '❌ <strong>CORS Error: Unable to load 3D model</strong><br>' +
-              '<div style="text-align: left; max-width: 600px; margin: 15px auto; font-size: 0.9rem; line-height: 1.8;">' +
-              '🔧 <strong>Server Configuration Required:</strong><br>' +
-              '<span style="margin-left: 20px;">The server needs to enable CORS (Cross-Origin Resource Sharing).</span><br><br>' +
-              '📋 <strong>For Server Administrator:</strong><br>' +
-              '<span style="margin-left: 20px;">1. Add CORS headers to allow cross-origin requests</span><br>' +
-              '<span style="margin-left: 20px;">2. See <a href="https://github.com/mihoutao-liu/ParkingTwin/blob/main/SERVER_CORS_CONFIG.md" target="_blank" style="color: #3498db;">SERVER_CORS_CONFIG.md</a> for detailed setup</span><br><br>' +
-              '💡 <strong>Alternative Options:</strong><br>' +
-              '<span style="margin-left: 20px;">• Download <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db;">full model</a> and view locally</span><br>' +
-              '<span style="margin-left: 20px;">• Clone the repository and open index.html locally</span>' +
-              '</div>';
-          } else {
-            loadingIndicator.innerHTML = 
-              '❌ <strong>Error Loading Model</strong><br>' +
-              '<span style="font-size: 0.9rem; margin-top: 10px; display: block;">' + error.message + '</span>';
-          }
-          
+          loadingIndicator.innerHTML = '❌ Unable to load 3D model online due to CORS restrictions.<br>' +
+            '<span style="font-size: 0.9rem; margin-top: 10px; display: block;">💡 To view the 3D model:</span>' +
+            '<span style="font-size: 0.85rem; margin-top: 5px; display: block;">1. Download the complete project and open index.html locally, or</span>' +
+            '<span style="font-size: 0.85rem; display: block;">2. Download the full model from the <a href="https://pan.quark.cn/s/d180e32624df" target="_blank" style="color: #3498db;">Quark link above</a></span>';
           loadingIndicator.style.color = '#ff6b6b';
           loadingIndicator.style.fontSize = '1rem';
           loadingIndicator.style.lineHeight = '1.6';
