@@ -236,11 +236,14 @@ See the configuration file for detailed comments on each parameter.
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{parkingtwin2025,
-  title={ParkingTwin: Training-Free Streaming 3D Reconstruction for Parking-Lot Digital Twins},
-  author={...},
-  journal={...},
-  year={2025}
+@misc{liu2026parkingtwintrainingfreestreaming3d,
+      title={ParkingTwin: Training-Free Streaming 3D Reconstruction for Parking-Lot Digital Twins}, 
+      author={Xinhao Liu and Yu Wang and Xiansheng Guo and Gordon Owusu Boateng and Yu Cao and Haonan Si and Xingchen Guo and Nirwan Ansari},
+      year={2026},
+      eprint={2601.13706},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2601.13706}, 
 }
 ```
 
