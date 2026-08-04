@@ -236,14 +236,18 @@ See the configuration file for detailed comments on each parameter.
 If you use this code in your research, please cite:
 
 ```bibtex
-@misc{liu2026parkingtwintrainingfreestreaming3d,
-      title={ParkingTwin: Training-Free Streaming 3D Reconstruction for Parking-Lot Digital Twins}, 
-      author={Xinhao Liu and Yu Wang and Xiansheng Guo and Gordon Owusu Boateng and Yu Cao and Haonan Si and Xingchen Guo and Nirwan Ansari},
-      year={2026},
-      eprint={2601.13706},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2601.13706}, 
+@article{LIU2026114,
+title = {ParkingTwin: Training-free streaming 3D reconstruction for parking-lot digital twins},
+journal = {ISPRS Journal of Photogrammetry and Remote Sensing},
+volume = {240},
+pages = {114-129},
+year = {2026},
+issn = {0924-2716},
+doi = {https://doi.org/10.1016/j.isprsjprs.2026.07.009},
+url = {https://www.sciencedirect.com/science/article/pii/S0924271626003564},
+author = {Xinhao Liu and Yu Wang and Xiansheng Guo and Gordon Owusu Boateng and Yu Cao and Haonan Si and Xingchen Guo and Nirwan Ansari},
+keywords = {Parking lot digital twin, structural prior, Real-time 3D reconstruction, Dynamic vehicle removal, Texture fusion, TSDF},
+abstract = {High-fidelity digital twins of parking lots provide essential environmental priors for path planning, collision detection, and perception system validation of AVP. However, constructing such robot-oriented twins faces a fundamental “trilemma” involving geometric ambiguity, environmental interference, and computational constraints: (1) The restricted and sparse forward-facing views of mobile platforms lead to geometric degeneration in traditional methods due to insufficient parallax; (2) Frequent dynamic occlusions (e.g., moving vehicles) and extreme lighting variations impede consistent texture fusion; and (3) Exis ting neural rendering methods rely on computationally expensive offline optimization, failing to meet the real-time streaming requirements of edge-side robotics. To address these challenges, we propose ParkingTwin, a training-free, lightweight, and streaming 3D reconstruction system. The methodological core lies in Structural-Prior-Driven Geometric Construction: We leverage a CAD-derived structural prior to directly generate a metric-consistent 3D Truncated Signed Distance Field (TSDF) for prior-available controlled deployments. This approach reframes blind geometric search as a prior-guided deterministic mapping process, substantially alleviating the ill-posedness caused by sparse views while avoiding costly geometric optimization overhead. Built on this explicit geometric backbone, ParkingTwin further incorporates Geometry-Aware Dynamic Filtering for transient occlusion suppression and Illumination-Robust Fusion in the CIELAB color space for appearance completion under severe lighting changes. Experiments demonstrate that our system achieves 30+ Frames Per Second (FPS) online streaming reconstruction on an entry-level GPU (GTX 1660). On a large-scale 68,000 m2 real-world dataset, our method achieves an Structural Similarity Index Measure (SSIM) of 0.87 (a 16.0% improvement), accelerates end-to-end processing by approximately 15×, and reduces video memory usage by 83.3% compared with state-of-the-art 3D Gaussian Splatting (3DGS) methods that require high-end GPUs (RTX 4090D). The system outputs explicit triangular meshes directly compatible with Unity/Unreal Engine (UE) digital twin workflows, effectively serving as an automated asset generator for initializing parking lot Digital Twins. Please visit our project page for the latest updates: https://mihoutao-liu.github.io/ParkingTwin/.}
 }
 ```
 
